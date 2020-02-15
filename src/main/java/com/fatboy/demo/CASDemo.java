@@ -1,14 +1,23 @@
 package com.fatboy.demo;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicStampedReference;
+
 /**
- *
- * @author david
- * 解决BBA问题，使用AtomicStampedReference,就是对象和版本号
+ * @author yww99
+ * @date 2020/2/15
+ * CAS 比较并交换
  */
-public class AtomicStampedReferenceTest {
+public class CASDemo {
     private static AtomicStampedReference<Integer> atomicStampedRef = new AtomicStampedReference<>(1, 0);
-    public static void main(String[] args){
+    //CAS demo
+    public static void cas(){
+        AtomicInteger number = new AtomicInteger();
+        System.out.println(number.compareAndSet(0,1)+"，number："+number.get());
+        System.out.println(number.compareAndSet(0,2)+"，number："+number.get());
+    }
+    //使用AtomicStampedReference 来解决ABA的问题
+    public static void aba(){
         Thread main = new Thread(() -> {
             System.out.println("操作线程" + Thread.currentThread() +",初始值 a = " + atomicStampedRef.getReference());
             int stamp = atomicStampedRef.getStamp();
@@ -31,5 +40,9 @@ public class AtomicStampedReferenceTest {
         },"干扰线程");
         main.start();
         other.start();
+    }
+
+    public static void main(String[] args) {
+        aba();
     }
 }
